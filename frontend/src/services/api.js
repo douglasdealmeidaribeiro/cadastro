@@ -1,18 +1,26 @@
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '');
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
-    },
-    ...options
-  });
+  let response;
+
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    });
+  } catch {
+    throw new Error(
+      `Não foi possível conectar à API em ${API_URL}. Verifique se o back-end está online e se VITE_API_URL aponta para a URL pública da API.`
+    );
+  }
 
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(payload?.message || 'Nao foi possivel concluir a operacao.');
+    throw new Error(payload?.message || 'Não foi possível concluir a operação.');
   }
 
   return payload;

@@ -261,28 +261,36 @@ input::placeholder {
 
 .toolbar {
   display: flex;
-  align-items: end;
-  justify-content: space-between;
+  align-items: stretch;
+  flex-direction: column;
   gap: 16px;
   padding: 16px;
 }
 
 .search-form {
-  flex: 1;
+  width: 100%;
 }
 
 .search-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(160px, 1fr) auto;
   gap: 10px;
 }
 
-.consult-button {
-  min-width: 112px;
+.search-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(100px, auto));
+  gap: 8px;
+}
+
+.search-actions button {
+  min-width: 0;
+  padding-inline: 12px;
 }
 
 .counter {
-  margin-bottom: 11px;
+  align-self: flex-end;
+  margin: 0;
   color: #a9c9d1;
   font-weight: 800;
   white-space: nowrap;
@@ -431,8 +439,13 @@ tbody tr:hover {
     grid-template-columns: 1fr;
   }
 
-  .consult-button {
+  .search-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .search-actions button {
     width: 100%;
+    padding-inline: 8px;
   }
 
   h1 {

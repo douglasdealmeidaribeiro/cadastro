@@ -2,9 +2,12 @@ export function FuncionarioSearch({
   value,
   onChange,
   onSearch,
+  onEdit,
+  onDelete,
   total,
   filteredTotal,
   isLoading,
+  acaoDeBusca,
   consultaRealizada
 }) {
   function handleSubmit(event) {
@@ -15,7 +18,7 @@ export function FuncionarioSearch({
   return (
     <section className="toolbar" aria-label="Consulta de funcionários">
       <form className="search-form" onSubmit={handleSubmit}>
-        <label htmlFor="search">Consultar por ID ou nome</label>
+        <label htmlFor="search">Funcionário por ID ou nome</label>
         <div className="search-controls">
           <input
             id="search"
@@ -24,9 +27,27 @@ export function FuncionarioSearch({
             value={value}
             onChange={(event) => onChange(event.target.value)}
           />
-          <button type="submit" className="consult-button" disabled={isLoading}>
-            {isLoading ? 'Consultando...' : 'Consultar'}
-          </button>
+          <div className="search-actions">
+            <button type="submit" className="consult-button" disabled={isLoading}>
+              {acaoDeBusca === 'consultar' ? 'Aguarde' : 'Consultar'}
+            </button>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={onEdit}
+              disabled={isLoading || !value.trim()}
+            >
+              {acaoDeBusca === 'atualizar' ? 'Aguarde' : 'Atualizar'}
+            </button>
+            <button
+              type="button"
+              className="danger-button"
+              onClick={onDelete}
+              disabled={isLoading || !value.trim()}
+            >
+              {acaoDeBusca === 'remover' ? 'Aguarde' : 'Remover'}
+            </button>
+          </div>
         </div>
       </form>
 

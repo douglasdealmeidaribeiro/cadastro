@@ -41,6 +41,39 @@ function validateFuncionario(funcionario) {
   return null;
 }
 
+function encontrarFuncionario(funcionarios, termo) {
+  const busca = termo.trim().toLowerCase();
+  const porId = funcionarios.find((funcionario) => funcionario._id?.toLowerCase() === busca);
+
+  if (porId) {
+    return porId;
+  }
+
+  const nomesExatos = funcionarios.filter(
+    (funcionario) => funcionario.nome?.trim().toLowerCase() === busca
+  );
+
+  if (nomesExatos.length === 1) {
+    return nomesExatos[0];
+  }
+
+  const correspondencias = funcionarios.filter((funcionario) => {
+    const id = funcionario._id?.toLowerCase() || '';
+    const nome = funcionario.nome?.toLowerCase() || '';
+    return id.includes(busca) || nome.includes(busca);
+  });
+
+  if (correspondencias.length === 1) {
+    return correspondencias[0];
+  }
+
+  if (correspondencias.length > 1 || nomesExatos.length > 1) {
+    throw new Error('Mais de um funcionário foi encontrado. Informe o ID completo.');
+  }
+
+  throw new Error('Nenhum funcionário foi encontrado com esse ID ou nome.');
+}
+
 export default function App() {
   const [funcionarios, setFuncionarios] = useState([]);
   const [funcionarioEmEdicao, setFuncionarioEmEdicao] = useState(null);
@@ -51,6 +84,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [funcionarioEmRemocao, setFuncionarioEmRemocao] = useState(null);
+  const [acaoDeBusca, setAcaoDeBusca] = useState(null);
 
   async function carregarFuncionarios() {
     setIsLoading(true);
@@ -81,6 +115,7 @@ export default function App() {
 
   async function handleConsultar() {
     setIsLoading(true);
+    setAcaoDeBusca('consultar');
     try {
       const data = await listarFuncionarios();
       setFuncionarios(data);
@@ -91,6 +126,44 @@ export default function App() {
       setAlert({ type: 'error', message: error.message });
     } finally {
       setIsLoading(false);
+      setAcaoDeBusca(null);
+    }
+  }
+
+  async function localizarFuncionario(acao) {
+    if (!searchTerm.trim()) {
+      setAlert({
+        type: 'error',
+        message: 'Informe o ID ou nome do funcionário para continuar.'
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setAcaoDeBusca(acao);
+
+    try {
+      const data = await listarFuncionarios();
+      setFuncionarios(data);
+      setAppliedSearchTerm(searchTerm);
+      setConsultaRealizada(true);
+
+      const funcionario = encontrarFuncionario(data, searchTerm);
+
+      if (acao === 'atualizar') {
+        handleEdit(funcionario);
+        setAlert({
+          type: 'success',
+          message: `Dados de ${funcionario.nome} carregados para atualização.`
+        });
+      } else {
+        await handleDelete(funcionario);
+      }
+    } catch (error) {
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setIsLoading(false);
+      setAcaoDeBusca(null);
     }
   }
 
@@ -184,9 +257,12 @@ export default function App() {
             value={searchTerm}
             onChange={setSearchTerm}
             onSearch={handleConsultar}
+            onEdit={() => localizarFuncionario('atualizar')}
+            onDelete={() => localizarFuncionario('remover')}
             total={funcionarios.length}
             filteredTotal={filteredFuncionarios.length}
             isLoading={isLoading}
+            acaoDeBusca={acaoDeBusca}
             consultaRealizada={consultaRealizada}
           />
           {consultaRealizada && (

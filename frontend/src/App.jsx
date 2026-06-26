@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { AlertMessage } from './components/AlertMessage.jsx';
 import { FuncionarioForm } from './components/FuncionarioForm.jsx';
 import { FuncionarioSearch } from './components/FuncionarioSearch.jsx';
@@ -45,8 +45,10 @@ export default function App() {
   const [funcionarios, setFuncionarios] = useState([]);
   const [funcionarioEmEdicao, setFuncionarioEmEdicao] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
+  const [consultaRealizada, setConsultaRealizada] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function carregarFuncionarios() {
@@ -61,12 +63,8 @@ export default function App() {
     }
   }
 
-  useEffect(() => {
-    carregarFuncionarios();
-  }, []);
-
   const filteredFuncionarios = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
+    const normalizedSearch = appliedSearchTerm.trim().toLowerCase();
 
     if (!normalizedSearch) {
       return funcionarios;
@@ -78,7 +76,22 @@ export default function App() {
 
       return id.includes(normalizedSearch) || nome.includes(normalizedSearch);
     });
-  }, [funcionarios, searchTerm]);
+  }, [funcionarios, appliedSearchTerm]);
+
+  async function handleConsultar() {
+    setIsLoading(true);
+    try {
+      const data = await listarFuncionarios();
+      setFuncionarios(data);
+      setAppliedSearchTerm(searchTerm);
+      setConsultaRealizada(true);
+      setAlert(null);
+    } catch (error) {
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   async function handleSubmit(funcionario, resetForm) {
     const validationError = validateFuncionario(funcionario);
@@ -99,7 +112,9 @@ export default function App() {
       }
 
       setFuncionarioEmEdicao(null);
-      await carregarFuncionarios();
+      if (consultaRealizada) {
+        await carregarFuncionarios();
+      }
     } catch (error) {
       setAlert({ type: 'error', message: error.message });
     } finally {
@@ -150,15 +165,20 @@ export default function App() {
           <FuncionarioSearch
             value={searchTerm}
             onChange={setSearchTerm}
+            onSearch={handleConsultar}
             total={funcionarios.length}
             filteredTotal={filteredFuncionarios.length}
-          />
-          <FuncionarioTable
-            funcionarios={filteredFuncionarios}
-            onEdit={setFuncionarioEmEdicao}
-            onDelete={handleDelete}
             isLoading={isLoading}
+            consultaRealizada={consultaRealizada}
           />
+          {consultaRealizada && (
+            <FuncionarioTable
+              funcionarios={filteredFuncionarios}
+              onEdit={setFuncionarioEmEdicao}
+              onDelete={handleDelete}
+              isLoading={isLoading}
+            />
+          )}
         </div>
       </div>
     </main>

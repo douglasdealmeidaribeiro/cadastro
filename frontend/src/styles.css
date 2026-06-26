@@ -212,14 +212,16 @@ input::placeholder {
 .primary-button,
 .secondary-button,
 .small-button,
-.danger-button {
+.danger-button,
+.consult-button {
   min-height: 40px;
   border-radius: 7px;
   padding: 0 14px;
   font-weight: 800;
 }
 
-.primary-button {
+.primary-button,
+.consult-button {
   color: #031b17;
   background: linear-gradient(135deg, #17e292, #06c978);
   box-shadow: 0 12px 24px rgba(6, 201, 120, 0.18);
@@ -246,8 +248,18 @@ input::placeholder {
   padding: 16px;
 }
 
-.toolbar > div {
+.search-form {
   flex: 1;
+}
+
+.search-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.consult-button {
+  min-width: 112px;
 }
 
 .counter {
@@ -368,6 +380,10 @@ tbody tr:hover {
     width: fit-content;
   }
 
+  .search-form {
+    width: 100%;
+  }
+
   .layout-grid {
     grid-template-columns: 1fr;
   }
@@ -389,6 +405,14 @@ tbody tr:hover {
   }
 
   .form-actions button {
+    width: 100%;
+  }
+
+  .search-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .consult-button {
     width: 100%;
   }
 

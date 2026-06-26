@@ -50,15 +50,22 @@ export function FuncionarioForm({ funcionarioEmEdicao, onCancelEdit, onSubmit, i
   const isEditing = Boolean(funcionarioEmEdicao);
 
   return (
-    <section className="panel form-panel" aria-labelledby="form-title">
+    <section
+      id="funcionario-form"
+      className={`panel form-panel${isEditing ? ' is-editing' : ''}`}
+      aria-labelledby="form-title"
+    >
       <div className="section-heading">
         <h2 id="form-title">{isEditing ? 'Editar funcionário' : 'Cadastrar funcionário'}</h2>
         {isEditing && (
-          <span className="editing-id" title={funcionarioEmEdicao._id}>
-            ID {funcionarioEmEdicao._id}
-          </span>
+          <span className="editing-badge">Modo edição</span>
         )}
       </div>
+      {isEditing && (
+        <p className="editing-description">
+          Atualize os campos abaixo e confirme em Salvar alterações.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="employee-form">
         <label>
@@ -113,7 +120,7 @@ export function FuncionarioForm({ funcionarioEmEdicao, onCancelEdit, onSubmit, i
 
         <div className="form-actions">
           <button type="submit" className="primary-button" disabled={isSubmitting}>
-            {isSubmitting ? 'Salvando...' : isEditing ? 'Salvar edição' : 'Cadastrar'}
+            {isSubmitting ? 'Salvando...' : isEditing ? 'Salvar alterações' : 'Cadastrar'}
           </button>
           {isEditing && (
             <button type="button" className="secondary-button" onClick={onCancelEdit}>

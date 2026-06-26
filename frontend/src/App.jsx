@@ -50,6 +50,7 @@ export default function App() {
   const [alert, setAlert] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [funcionarioEmRemocao, setFuncionarioEmRemocao] = useState(null);
 
   async function carregarFuncionarios() {
     setIsLoading(true);
@@ -122,13 +123,28 @@ export default function App() {
     }
   }
 
+  function handleEdit(funcionario) {
+    setFuncionarioEmEdicao(funcionario);
+    setAlert(null);
+
+    window.requestAnimationFrame(() => {
+      document.getElementById('funcionario-form')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    });
+  }
+
   async function handleDelete(funcionario) {
-    const confirmed = window.confirm(`Remover ${funcionario.nome}?`);
+    const confirmed = window.confirm(
+      `Deseja remover ${funcionario.nome}? Esta ação não poderá ser desfeita.`
+    );
 
     if (!confirmed) {
       return;
     }
 
+    setFuncionarioEmRemocao(funcionario._id);
     try {
       await removerFuncionario(funcionario._id);
       setAlert({ type: 'success', message: 'Funcionário removido com sucesso.' });
@@ -138,6 +154,8 @@ export default function App() {
       await carregarFuncionarios();
     } catch (error) {
       setAlert({ type: 'error', message: error.message });
+    } finally {
+      setFuncionarioEmRemocao(null);
     }
   }
 
@@ -174,9 +192,11 @@ export default function App() {
           {consultaRealizada && (
             <FuncionarioTable
               funcionarios={filteredFuncionarios}
-              onEdit={setFuncionarioEmEdicao}
+              onEdit={handleEdit}
               onDelete={handleDelete}
               isLoading={isLoading}
+              isSubmitting={isSubmitting}
+              funcionarioEmRemocao={funcionarioEmRemocao}
             />
           )}
         </div>

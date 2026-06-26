@@ -19,7 +19,14 @@ function shortId(id) {
   return id ? `${id.slice(0, 8)}...` : '-';
 }
 
-export function FuncionarioTable({ funcionarios, onEdit, onDelete, isLoading }) {
+export function FuncionarioTable({
+  funcionarios,
+  onEdit,
+  onDelete,
+  isLoading,
+  isSubmitting,
+  funcionarioEmRemocao
+}) {
   return (
     <section className="panel table-panel" aria-labelledby="table-title">
       <div className="section-heading">
@@ -61,15 +68,23 @@ export function FuncionarioTable({ funcionarios, onEdit, onDelete, isLoading }) 
                   <td>{formatDate(funcionario.createdAt)}</td>
                   <td>
                     <div className="row-actions">
-                      <button type="button" className="small-button" onClick={() => onEdit(funcionario)}>
+                      <button
+                        type="button"
+                        className="small-button"
+                        onClick={() => onEdit(funcionario)}
+                        disabled={isSubmitting || Boolean(funcionarioEmRemocao)}
+                        aria-label={`Editar dados de ${funcionario.nome}`}
+                      >
                         Editar
                       </button>
                       <button
                         type="button"
                         className="danger-button"
                         onClick={() => onDelete(funcionario)}
+                        disabled={isSubmitting || Boolean(funcionarioEmRemocao)}
+                        aria-label={`Remover ${funcionario.nome}`}
                       >
-                        Remover
+                        {funcionarioEmRemocao === funcionario._id ? 'Removendo...' : 'Remover'}
                       </button>
                     </div>
                   </td>

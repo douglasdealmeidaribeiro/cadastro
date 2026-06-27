@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: cadastro-funcionarios-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://douglasdealmeidaribeiro.github.io

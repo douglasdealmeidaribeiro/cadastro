@@ -151,19 +151,14 @@ Remove um funcionário.
 ### Render
 
 1. Suba este projeto para o GitHub.
-2. No Render, crie um novo `Web Service`.
-3. Selecione o repositório.
-4. Configure:
-   - `Root Directory`: `backend`
-   - `Build Command`: `npm install`
-   - `Start Command`: `npm start`
-5. Adicione as variáveis de ambiente:
-   - `MONGODB_URI`: connection string do MongoDB Atlas.
-   - `CORS_ORIGIN`: URL do GitHub Pages, por exemplo `https://seu-usuario.github.io/cadastro`.
-   - `PORT`: `3000`, se o serviço exigir.
+2. No Render, escolha `New` > `Blueprint`.
+3. Selecione este repositório.
+4. O arquivo `render.yaml` da raiz preencherá automaticamente a configuração.
+5. Informe apenas `MONGODB_URI` quando solicitado.
 6. Faça o deploy e copie a URL pública da API.
 
-O arquivo `backend/render.yaml` também está incluído como configuração simples para Render.
+O Blueprint configura o diretório `backend`, os comandos de build e inicialização,
+o health check e o CORS do GitHub Pages. A porta é fornecida automaticamente pelo Render.
 
 ## Deploy do Front-end no GitHub Pages
 
